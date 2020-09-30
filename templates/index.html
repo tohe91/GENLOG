@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    <title>GENLOG</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+  </head>
+  <body>
+    <div class="row">
+
+      <div class="column">
+        <h2>File Upload</h2>
+        <form method="POST" action="" enctype="multipart/form-data" onsubmit="startInterval()">
+          <p><input type="file" name="file"></p>
+          <h2><input type="submit" value="Submit"></h2>
+        </form>
+        <div id="column1"></div>
+      </div>
+
+      <div class="column">
+        <h2>Extracted Metrics</h2>
+        <div id="column2"></div>
+      </div>
+
+      <div class="column">
+        <h2>Resampled Data</h2>
+        <div id="column3"></div>
+      </div>
+
+      <div class="column">
+        <h2>Trained Models</h2>
+        <div id="column4"></div>
+      </div>
+
+      <div class="column">
+        <h2>Generated Data</h2>
+        <div id="column5"></div>
+      </div>
+
+
+    </div>
+   
+  </body>
+</html>
+
+
+
