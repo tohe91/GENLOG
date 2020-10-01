@@ -33,6 +33,8 @@ app.config['TRAINED_MODELS'] = 'uploads/models/lstm/'
 app.config['GENERATED_DATA'] = 'uploads/generated/'
 app.config['STATE'] = 'start'
 
+last_num_of_files = [0,0,0,0,0]
+
 def split_list(liste, iscsv=True):
     if iscsv:
         liste = ['_'.join(element.split('_')[1:])[:-4] for element in liste]
@@ -68,7 +70,21 @@ def upload_files():
 
 @app.route('/state')
 def state():
-    return app.config['STATE']
+    changed = [0,0,0,0,0]
+    if last_num_of_files[1] != len(os.listdir(app.config['EXTRACTED_METRICS'])):
+        last_num_of_files[1] = len(os.listdir(app.config['EXTRACTED_METRICS']))
+        changed[1] = 1
+    if last_num_of_files[2] != len(os.listdir(app.config['RESAMPLED_DATA'])):
+        last_num_of_files[2] = len(os.listdir(app.config['RESAMPLED_DATA']))
+        changed[2] = 1
+    if last_num_of_files[3] != len(os.listdir(app.config['TRAINED_MODELS'])):
+        last_num_of_files[3] = len(os.listdir(app.config['TRAINED_MODELS']))
+        changed[3] = 1
+    if last_num_of_files[4] != len(os.listdir(app.config['GENERATED_DATA'])):
+        last_num_of_files[4] = len(os.listdir(app.config['GENERATED_DATA']))
+        changed[4] = 1
+
+    return {'state': app.config['STATE'], 'changed':changed}
 
 @app.route('/column1')
 def column1():
@@ -77,22 +93,26 @@ def column1():
 @app.route('/column2')
 def column2():
     items = [{'href':app.config['EXTRACTED_METRICS']+file, 'name':name} for(file, name) in zip(os.listdir(app.config['EXTRACTED_METRICS']), split_list(os.listdir(app.config['EXTRACTED_METRICS'])))]
-    return render_template('column1.html', items=items, state= app.config['STATE'])
+    return render_template('column1.html', items=items, state=app.config['STATE'])
+
 
 @app.route('/column3')
 def column3():
     items = [{'href':app.config['RESAMPLED_DATA']+file, 'name':name} for(file, name) in zip(os.listdir(app.config['RESAMPLED_DATA']), split_list(os.listdir(app.config['RESAMPLED_DATA'])))]
     return render_template('column1.html', items=items, state= app.config['STATE'])
 
+
 @app.route('/column4')
 def column4():
     items = [{'href':app.config['TRAINED_MODELS']+file, 'name':name} for(file, name) in zip(os.listdir(app.config['TRAINED_MODELS']), split_list(os.listdir(app.config['TRAINED_MODELS']),iscsv=False))]
     return render_template('column1.html', items=items, state= app.config['STATE'])
 
+
 @app.route('/column5')
 def column5():
     items = [{'href':app.config['GENERATED_DATA']+file, 'name':name} for(file, name) in zip(os.listdir(app.config['GENERATED_DATA']), split_list(os.listdir(app.config['GENERATED_DATA'])))]
     return render_template('column1.html', items=items, state= app.config['STATE'])
+
     
 def pipeline():
     app.config['STATE'] = 'extract'

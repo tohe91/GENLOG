@@ -1,5 +1,6 @@
   var interval;
   var state = '';
+  var changed = [];
   $( document ).ready(function() {
     update();
     clearInterval(interval);
@@ -20,7 +21,8 @@
         type: "get",
         data: {},
         success: function(response) {
-          state = response;
+          state = response.state;
+          changed = response.changed;
           console.log(state);
           if (state != 'start') {
             $.ajax({
@@ -41,9 +43,11 @@
         type: "get",
         data: {},
         success: function(response) {
-          $("#column2").html(response);
-          if(state == 'extract') {
-            $("#column2").append('<div class="loader"></div>');
+          if (changed[1] == 1 || state != 'extract') {
+            $("#column2").html(response);
+            if(state == 'extract') {
+              $("#column2").append('<div class="loader"></div>');
+            }
           }
         },
         error: function(xhr) {
@@ -56,10 +60,12 @@
         type: "get",
         data: {},
         success: function(response) {
-          $("#column3").html(response);
-          if(state == 'resample') {
-            $("#column3").append('<div class="loader"></div>');
-          }
+          if (changed[2] == 1 || state != 'resample') {
+            $("#column3").html(response);
+            if(state == 'resample') {
+              $("#column3").append('<div class="loader"></div>');
+            }
+        }
         },
         error: function(xhr) {
           
@@ -71,9 +77,11 @@
         type: "get",
         data: {},
         success: function(response) {
-          $("#column4").html(response);
-          if(state == 'train') {
-            $("#column4").append('<div class="loader"></div>');
+          if (changed[3] == 1 == true || state != 'train') {
+            $("#column4").html(response);
+            if(state == 'train') {
+              $("#column4").append('<div class="loader"></div>');
+            }
           }
         },
         error: function(xhr) {
@@ -86,9 +94,11 @@
         type: "get",
         data: {},
         success: function(response) {
-          $("#column5").html(response);
-          if(state == 'gen') {
-            $("#column5").append('<div class="loader"></div>');
+          if (changed[4] == 1 || state != 'gen') {
+            $("#column5").html(response);
+            if(state == 'gen') {
+              $("#column5").append('<div class="loader"></div>');
+            }
           }
         },
         error: function(xhr) {
