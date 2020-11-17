@@ -52,7 +52,7 @@ def index():
     resampled_data = split_list(os.listdir(app.config['RESAMPLED_DATA']))
     trained_models = split_list(os.listdir(app.config['TRAINED_MODELS']), False)
     generated_data = split_list(os.listdir(app.config['GENERATED_DATA']))
-    return render_template('index.html', files=files, extracted_files=extracted_metrics, resampled_data=resampled_data, trained_models=trained_models, generated_data=generated_data)
+    return render_template('landing.html', files=files, extracted_files=extracted_metrics, resampled_data=resampled_data, trained_models=trained_models, generated_data=generated_data)
 
 @app.route('/', methods=['POST'])
 def upload_files():

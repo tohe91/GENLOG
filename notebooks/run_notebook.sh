@@ -1,2 +1,2 @@
 #!/bin/bash
-jupyter nbconvert --execute --inplace test.ipynb
+jupyter nbconvert --execute --inplace lstm.ipynb
