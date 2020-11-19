@@ -7,6 +7,7 @@ import th_code.time_series_single_runs as time_series_single_runs
 import th_code.time_series_custom_extraction as time_series_custom_extraction
 import th_code.time_series_resample as time_series_resample
 import th_code.lstm as lstm
+import landing
 
 app = Flask(__name__)
 
@@ -22,6 +23,8 @@ if not os.path.exists("uploads/models/lstm"):
     os.makedirs("uploads/models/lstm")
 if not os.path.exists("uploads/generated"):
     os.makedirs("uploads/generated")
+if not os.path.exists("uploads/html"):
+    os.makedirs("uploads/html")
 
 #app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
 app.config['UPLOAD_EXTENSIONS'] = ['.xes', '.yaml']
@@ -31,6 +34,7 @@ app.config['EXTRACTED_METRICS'] = 'uploads/single_runs/'
 app.config['RESAMPLED_DATA'] = 'uploads/resampled/'
 app.config['TRAINED_MODELS'] = 'uploads/models/lstm/'
 app.config['GENERATED_DATA'] = 'uploads/generated/'
+app.config['HTML'] = 'uploads/html/'
 app.config['STATE'] = 'start'
 
 last_num_of_files = [0,0,0,0,0]
@@ -52,6 +56,7 @@ def index():
     resampled_data = split_list(os.listdir(app.config['RESAMPLED_DATA']))
     trained_models = split_list(os.listdir(app.config['TRAINED_MODELS']), False)
     generated_data = split_list(os.listdir(app.config['GENERATED_DATA']))
+    
     return render_template('landing.html', files=files, extracted_files=extracted_metrics, resampled_data=resampled_data, trained_models=trained_models, generated_data=generated_data)
 
 @app.route('/', methods=['POST'])
@@ -66,6 +71,12 @@ def upload_files():
     x = threading.Thread(target=pipeline)
     x.start()
 
+    return redirect(url_for('index'))
+
+
+@app.route('/start_run', methods=['POST'])
+def start_run():
+    print('start run')
     return redirect(url_for('index'))
 
 @app.route('/state')
@@ -167,6 +178,32 @@ def gen():
     lstm.generate_data(app.config['TRAINED_MODELS'],  os.listdir(app.config['TRAINED_MODELS']))
     return "generation finished"    
     
+@app.route('/state_eval')
+def state_eval():
+    
+    return {'logs':landing.create_logs_table(), 'runs':landing.create_runs_table()}
+
+
+@app.route('/delete_log/<name>', methods=['GET'])
+def delete_log(name):
+    fullPath = os.path.join('uploads', 'logs', name)
+    os.remove(fullPath)
+    return redirect(url_for('index'))
+
+@app.route('/delete_run/<name>', methods=['GET'])
+def delete_run(name):
+    fullPath = os.path.join('uploads', 'html', name)
+    os.remove(fullPath)
+    return redirect(url_for('index'))
+
+@app.route('/uploads/logs/<filename>')
+def download_logs(filename):
+    return send_from_directory(app.config['FILES'], filename)
+
+@app.route('/uploads/runs/<filename>')
+def download_runs(filename):
+      return send_from_directory(app.config['HTML'], filename)
+
     
     
     

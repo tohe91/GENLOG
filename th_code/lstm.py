@@ -88,11 +88,14 @@ def generate_data(path, files):
             X2 = X2.reshape((X2.shape[0], X2.shape[1], n_features))
             x_input2 = X2
 
+            plt.figure(figsize=(30,10))
+
             model = load_model(model_path)
+
             yhat = model.predict(x_input2, verbose=0)
-            #plt.figure(figsize=(16,4))
-            #plt.scatter(range(len(y)), y, color='red')
-            #plt.scatter(range(len(yhat)), yhat, color='blue')
+            
+            plt.scatter(range(len(y2)), y2, color='red', marker='x')
+            plt.scatter(range(len(yhat)), yhat, color='blue', alpha=0.2, marker='o')
 
             pd.DataFrame(yhat).to_csv('uploads/generated/' + file + '.csv', header=None)
 

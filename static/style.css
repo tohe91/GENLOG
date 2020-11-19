@@ -68,3 +68,11 @@ a:link {
 	color:#999;
 	text-decoration: underline;
   }
+
+  th {
+	padding-right:20px;
+}
+  td {
+	  padding-right:20px;
+  }
+  

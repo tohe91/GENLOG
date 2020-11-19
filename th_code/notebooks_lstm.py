@@ -1,6 +1,7 @@
 import nbformat as nbf
 import os
 from nbconvert.preprocessors import ExecutePreprocessor
+from shutil import copyfile
 
 nb = nbf.v4.new_notebook()
 
@@ -43,3 +44,4 @@ with open('../lstm.ipynb', 'w', encoding='utf-8') as f:
     nbf.write(nb, f)
 
 os.system('jupyter nbconvert --to html ../lstm.ipynb ../lstm.html')
+copyfile('../lstm.html', '../uploads/html/lstm.html')

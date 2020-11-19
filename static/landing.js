@@ -1,8 +1,28 @@
-var table = $('<table>').addClass('foo');
+var interval;
+  $( document ).ready(function() {
+    update();
+    clearInterval(interval);
+    interval = setInterval(update, 2000);
+});
 
-for(i=0; i<3; i++){
-    var row = $('<tr>').addClass('bar').text('result ' + i);
-    table.append(row);
-}
-
-$('#log').append(table);
+function startInterval() {
+    clearInterval(interval);
+    interval = setInterval(update, 2000);
+  }
+  function update() {
+    
+    $.ajax({
+        url: "/state_eval",
+        type: "get",
+        data: {},
+        success: function(response) {
+            console.log(response.table);
+          $('#logs').html(response.logs);
+          $('#runs').html(response.runs);
+        },
+          error: function(xhr) {
+          
+        }
+      });
+    }
+  
