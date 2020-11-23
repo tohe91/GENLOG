@@ -3,12 +3,7 @@ services:
   web:
     build: .
     ports:
-      - "8888:8888"
-    volumes:
-       - .:/sessions
+      - "5000:5000"
   redis:
     image: "redis:alpine"
 
-volumes:
-    sessions:
-        driver: local
