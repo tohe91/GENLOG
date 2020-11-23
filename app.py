@@ -184,27 +184,32 @@ def state_eval():
     return {'logs':landing.create_logs_table(), 'runs':landing.create_runs_table()}
 
 
-@app.route('/delete_log/<name>', methods=['GET'])
+@app.route('/delete_log/<name>', methods=['GET', 'POST'])
 def delete_log(name):
     fullPath = os.path.join('uploads', 'logs', name)
     os.remove(fullPath)
     return redirect(url_for('index'))
 
-@app.route('/delete_run/<name>', methods=['GET'])
+@app.route('/delete_run/<name>', methods=['GET', 'POST'])
 def delete_run(name):
     fullPath = os.path.join('uploads', 'html', name)
     os.remove(fullPath)
     return redirect(url_for('index'))
 
-@app.route('/uploads/logs/<filename>')
+@app.route('/uploads/logs/<filename>', methods=['GET', 'POST'])
 def download_logs(filename):
     return send_from_directory(app.config['FILES'], filename)
 
-@app.route('/uploads/runs/<filename>')
+@app.route('/uploads/runs/<filename>', methods=['GET', 'POST'])
 def download_runs(filename):
       return send_from_directory(app.config['HTML'], filename)
 
-    
+
+@app.route('/use_log/<filename>', methods=['GET', 'POST'])
+def use_log(filename):
+    fullPath = os.path.join('uploads', 'logs', filename)
+    print(fullPath)
+    return redirect(url_for('index'))
     
     
     

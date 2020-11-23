@@ -6,24 +6,28 @@ from datetime import datetime
 import app
 
 class ItemTable(Table):
+    check = ButtonCol('Use', 'use_log', url_kwargs=dict(filename='name'), attr='check', column_html_attrs = {'class': 'no_pad'})
     name = Col('Name')
     size = Col('Size')
     date = Col('Upload Date')
-    open = ButtonCol('Actions', 'download_logs', url_kwargs=dict(filename='name'), attr='open')
+    open = ButtonCol('Actions', 'download_logs', url_kwargs=dict(filename='name'), attr='open', column_html_attrs = {'class': 'no_pad'})
     delete = ButtonCol('', 'delete_log', url_kwargs=dict(name='name'), attr='delete')
+    
     
 
 class ItemTableRuns(Table):
     name = Col('Name')
     label = Col('Label')
-    date = Col('Upload Date')
-    open = ButtonCol('Actions', 'download_runs', url_kwargs=dict(filename='name'), attr='open')
+    date = Col('Creation Date')
+    open = ButtonCol('Actions', 'download_runs', url_kwargs=dict(filename='name'), attr='open', column_html_attrs = {'class': 'no_pad'})
     delete = ButtonCol('', 'delete_run', url_kwargs=dict(name='name'), attr='delete')
+
     
 
 
 class Item(object):
-    def __init__(self, name, size, date, open, delete = None):
+    def __init__(self, check, name, size, date, open, delete = None):
+        self.check = check
         self.name = name
         self.size = size
         self.date = date
@@ -31,12 +35,13 @@ class Item(object):
         self.open = open
 
 class ItemRuns(object):
-    def __init__(self, name, label, date, open, delete = None):
+    def __init__(self, name, label, date, open, delete = None, check=True):
         self.name = name
         self.label = label
         self.date = date
         self.delete = delete
         self.open = open
+        self.check = check
 
 
 def logs(path):
@@ -50,7 +55,7 @@ def logs(path):
         else:
             size = os.path.getsize(fullPath)
             ctime = datetime.fromtimestamp(os.path.getctime(fullPath)).strftime('%Y-%m-%d  %H:%M:%S')
-            item = Item(entry, file_size_conversion(size), ctime, 'OPEN', 'DELETE')
+            item = Item('O', entry, file_size_conversion(size), ctime, 'DOWNLOAD', 'DELETE')
             allFiles.append(item)
     return allFiles
 
