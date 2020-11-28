@@ -5,6 +5,9 @@ var interval;
     interval = setInterval(update, 2000);
 });
 
+var logs = '';
+var runs = '';
+
 function startInterval() {
     clearInterval(interval);
     interval = setInterval(update, 2000);
@@ -16,9 +19,14 @@ function startInterval() {
         type: "get",
         data: {},
         success: function(response) {
-            console.log(response.table);
-          $('#logs').html(response.logs);
-          $('#runs').html(response.runs);
+          if (logs != response.logs) {
+            $('#logs').html(response.logs);
+            logs = response.logs;
+          }
+          if (runs != response.runs) {
+            $('#runs').html(response.runs);
+            runs = response.runs;
+          }
         },
           error: function(xhr) {
           

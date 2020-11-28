@@ -6,7 +6,7 @@ import os
 import matplotlib.pyplot as plt
 
 
-def resample(path, files):
+def resample(path, path2, files):
 
         dfs = []
         
@@ -21,7 +21,7 @@ def resample(path, files):
             df = df.reset_index()
             df = df.drop('timestamp', axis=1)
             dfs.append(df)
-            write_csv(df, file)
+            write_csv(df, path2, file)
         """
         sizes = [df.shape[0] for df in dfs]
         if len(sizes) > 3:
@@ -55,13 +55,13 @@ def resample(path, files):
                         """
 
 
-def write_csv(df, file):
+def write_csv(df, path2, file):
     print("write resampled " + file)
-    df.to_csv('uploads/resampled/' + file, header=False)
+    df.to_csv(path2 + file, header=False)
  
 
-def run(path, files):   
+def run(path, path2, files):   
     print("resample start")                        
-    resample(path, files)
+    resample(path, path2, files)
     print("resample end")  
     print("--------------------------------")

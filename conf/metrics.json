@@ -1,16 +1,5 @@
 [	
-	"Spindle/actSpeed",
-	"Spindle/driveLoad",
 	"Axis/X/aaLoad",
 	"Axis/Y/aaLoad",
-	"Axis/Z/aaLoad",
-	"Axis/X/aaTorque",
-	"Axis/Y/aaTorque",
-	"Axis/Z/aaTorque",
-	"Axis/X/aaLeadP",
-	"Axis/Y/aaLeadP",
-	"Axis/Z/aaLeadP",
-	"Axis/X/aaVactB",
-	"Axis/Y/aaVactB",
-	"Axis/Z/aaVactB"
+	"Spindle/driveLoad"
 ]

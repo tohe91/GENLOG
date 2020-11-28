@@ -55,20 +55,28 @@ def logs(path):
         else:
             size = os.path.getsize(fullPath)
             ctime = datetime.fromtimestamp(os.path.getctime(fullPath)).strftime('%Y-%m-%d  %H:%M:%S')
-            item = Item('O', entry, file_size_conversion(size), ctime, 'DOWNLOAD', 'DELETE')
+            check = 'O'
+            delete = 'DELETE'
+            if entry in app.selected_files:
+                check = '\u2713'
+            if entry.split('.')[0] in ['0b679131-af02-4f1a-bba2-f8d1441b0ca7', '1ab2f9dd-62ff-4433-8d88-605744403ab2', '1c65003f-2c69-449a-9e8b-7dc8ddda07d4']:
+                delete = None
+          
+            item = Item(check, entry, file_size_conversion(size), ctime, 'DOWNLOAD', delete)
             allFiles.append(item)
     return allFiles
 
 def runs(path):
 
-    listOfFile = os.listdir(path)
+    listOfFile = sorted(os.listdir(path))
     allFiles = list()
     for entry in listOfFile:
         fullPath = os.path.join(path, entry)
         if os.path.isdir(fullPath):
             allFiles = allFiles + logs(fullPath)
         else:
-            label = 'Run 1'
+            run_index = entry.split('_')[1].split('.')[0]
+            label = 'Run ' + run_index
             ctime = datetime.fromtimestamp(os.path.getctime(fullPath)).strftime('%Y-%m-%d  %H:%M:%S')
             item = ItemRuns(entry, label, ctime, 'OPEN', 'DELETE')
             allFiles.append(item)
