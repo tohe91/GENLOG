@@ -10,7 +10,7 @@ import th_code.lstm as lstm
 import landing
 import th_code.notebooks_lstm as nblstm
 
-app = Flask(__name__, static_url_path='')
+app = Flask(__name__)
 
 if not os.path.exists("uploads/logs/"):
     os.makedirs("uploads/logs/")
@@ -40,10 +40,6 @@ def split_list(liste, iscsv=True):
          liste = ['_'.join(element.split('_')[1:]) for element in liste]
     return liste
 
-
-@app.route('/<path:path>')
-def send(path):
-    return send_from_directory(path)
 
 @app.route('/')
 def index():
