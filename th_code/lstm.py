@@ -82,6 +82,12 @@ def train_models2(path, path2, file):
         file_name = split_path(csv_file)[-1][:-4]
      
         if not glob.glob('uploads/models/lstm/' + file_name):
+
+            y_label = 'motor load'
+            if 'Torque' in file:
+                y_label = 'motor torque'
+            if 'Speed' in file:
+                y_label = 'motor speed'
               
             df = pd.read_csv(csv_file, header=None)
             raw_seq = df[1].to_numpy()
@@ -94,15 +100,15 @@ def train_models2(path, path2, file):
 
             fig, ax = plt.subplots(figsize=(30,9))
             ax.legend(custom_lines, ['real data', 'generated data'])
-            ax.set(xlabel='time (100ms)', ylabel='motor load')
+            ax.set(xlabel='time (100ms)', ylabel=y_label)
 
-            for i in range(50):
+            for i in range(80):
                 model = Sequential()
-                model.add(LSTM(20, activation='relu', input_shape=(n_steps, n_features)))
+                model.add(LSTM(15, activation='relu', input_shape=(n_steps, n_features)))
                 model.add(Dense(1))
                 model.compile(optimizer='adam', loss='mse')
                 callbacks = [EarlyStopping(monitor='loss', patience=5)]
-                model.fit(X, y, epochs=20, verbose=0, callbacks=callbacks)
+                model.fit(X, y, epochs=10, verbose=0, callbacks=callbacks)
 
                 yhat = model.predict(X, verbose=0)
     
