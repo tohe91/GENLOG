@@ -17,7 +17,7 @@ if not os.path.exists("uploads/logs/"):
 if not os.path.exists("uploads/html/"):
     os.makedirs("uploads/html/")
 
-
+app.config["APPLICATION_ROOT"] = "/genlog/server"
 #app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
 app.config['UPLOAD_EXTENSIONS'] = ['.xes', '.yaml']
 app.config['UPLOADS'] = '/uploads/'
@@ -39,6 +39,8 @@ def split_list(liste, iscsv=True):
     else:
          liste = ['_'.join(element.split('_')[1:]) for element in liste]
     return liste
+
+
 
 
 @app.route('/')

@@ -67,7 +67,6 @@ def logs(path):
     return allFiles
 
 def runs(path):
-
     listOfFile = sorted(os.listdir(path))
     allFiles = list()
     for entry in listOfFile:

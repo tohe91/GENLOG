@@ -15,7 +15,7 @@ function startInterval() {
   function update() {
     
     $.ajax({
-        url: "/state_eval",
+        url: "state_eval",
         type: "get",
         data: {},
         success: function(response) {

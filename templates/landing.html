@@ -2,13 +2,13 @@
 <html>
   <head>
     <title>GENLOG</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="static/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="{{ url_for('static', filename='landing.js') }}"></script>
+    <script src="static/landing.js"></script>
   </head>
   <body>
     <h1>GENLOG</h1>
-    <img src="{{ url_for('static', filename='genlog_approach.png') }}" alt="genlog_approach" width="938" height="143">
+    <img src="static/genlog_approach.png" alt="genlog_approach" width="938" height="143">
     <p>The GENLOG pipeline depicted in the above Figure and all the processing steps, model training, and data generation are implemented using python. The LSTM is implemented with the Tensorflow backend which uses CUDA for GPU accelerated training. The repository <a href="https://github.com/tohe91/GENLOG" target="_blank">https://github.com/tohe91/GENLOG}</a>.
     </p>
     <h2>Available Log Files</h2>
@@ -25,7 +25,7 @@
     <div id="logs"></div>
     <div>
       <br>
-      <form method="POST" action="/start_run" enctype="multipart/form-data" onsubmit="startInterval()">
+      <form method="POST" action="start_run" enctype="multipart/form-data" onsubmit="startInterval()">
         <span>Use one or many of the above Files for a new training run</span>
         <span><input type="submit" value="Start Training Run"></span>
       </form>
