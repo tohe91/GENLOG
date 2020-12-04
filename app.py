@@ -17,16 +17,15 @@ if not os.path.exists("uploads/logs/"):
 if not os.path.exists("uploads/html/"):
     os.makedirs("uploads/html/")
 
-app.config["APPLICATION_ROOT"] = "/genlog/server"
 #app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
 app.config['UPLOAD_EXTENSIONS'] = ['.xes', '.yaml']
-app.config['UPLOADS'] = '/uploads/'
-app.config['FILES'] = '/logs/'
-app.config['EXTRACTED_METRICS'] = '/single_runs/'
-app.config['RESAMPLED_DATA'] = '/resampled/'
-app.config['TRAINED_MODELS'] = '/models/lstm/'
-app.config['GENERATED_DATA'] = '/generated/'
-app.config['HTML'] = '/html/'
+app.config['UPLOADS'] = 'uploads/'
+app.config['FILES'] = 'logs/'
+app.config['EXTRACTED_METRICS'] = 'single_runs/'
+app.config['RESAMPLED_DATA'] = 'resampled/'
+app.config['TRAINED_MODELS'] = 'models/lstm/'
+app.config['GENERATED_DATA'] = 'generated/'
+app.config['HTML'] = 'html/'
 app.config['STATE'] = 'start'
 
 selected_files = []
