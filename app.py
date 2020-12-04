@@ -126,7 +126,7 @@ def state_eval():
     return {'logs':landing.create_logs_table(), 'runs':landing.create_runs_table()}
 
 
-@app.route('/delete_log/<name>', methods=['GET', 'POST'])
+@app.route('genlog/delete_log/<name>', methods=['GET', 'POST'])
 def delete_log(name):
     if not name.split('.')[0] in ['0b679131-af02-4f1a-bba2-f8d1441b0ca7', '1ab2f9dd-62ff-4433-8d88-605744403ab2', '1c65003f-2c69-449a-9e8b-7dc8ddda07d4']:
         fullPath = os.path.join('uploads', 'logs', name)
