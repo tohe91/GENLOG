@@ -1,6 +1,6 @@
 import imghdr
 import os, json
-from flask import Flask, render_template, request, redirect, url_for, abort, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, abort, send_from_directory, Blueprint
 from werkzeug.utils import secure_filename
 import threading
 import th_code.time_series_single_runs as time_series_single_runs
@@ -8,7 +8,7 @@ import th_code.time_series_custom_extraction as time_series_custom_extraction
 import th_code.time_series_resample as time_series_resample
 import th_code.lstm as lstm
 import landing
-import th_code.notebooks_lstm as nblstm
+import notebooks_lstm as nblstm
 
 app = Flask(__name__)
 
@@ -18,13 +18,15 @@ if not os.path.exists("uploads/html/"):
     os.makedirs("uploads/html/")
 
 #app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
+genlog = Blueprint('genlog', __name__)
+app.register_blueprint(genlog, url_prefix='/genlog')
 app.config['UPLOAD_EXTENSIONS'] = ['.xes', '.yaml']
 app.config['UPLOADS'] = 'uploads/'
 app.config['FILES'] = 'logs/'
-app.config['EXTRACTED_METRICS'] = 'single_runs/'
-app.config['RESAMPLED_DATA'] = 'resampled/'
-app.config['TRAINED_MODELS'] = 'models/lstm/'
-app.config['GENERATED_DATA'] = 'generated/'
+app.config['EXTRACTED_METRICS'] = '/single_runs/'
+app.config['RESAMPLED_DATA'] = '/resampled/'
+app.config['TRAINED_MODELS'] = '/models/lstm/'
+app.config['GENERATED_DATA'] = '/generated/'
 app.config['HTML'] = 'html/'
 app.config['STATE'] = 'start'
 
@@ -58,7 +60,7 @@ def upload_files():
         uploaded_file.save(app.config['UPLOADS'] + app.config['FILES'] + filename)
 
 
-    return redirect(url_for('index'))
+    return render_template('landing.html')
 
 
 @app.route('/start_run', methods=['POST'])
@@ -70,6 +72,10 @@ def start_run():
     return redirect(url_for('index'))
 
     
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('landing.html')
+
 def pipeline(file, filename):
 
         nblstm.create_notebook(file, filename)
@@ -126,7 +132,7 @@ def state_eval():
     return {'logs':landing.create_logs_table(), 'runs':landing.create_runs_table()}
 
 
-@app.route('genlog/delete_log/<name>', methods=['GET', 'POST'])
+@app.route('/delete_log/<name>', methods=['GET', 'POST'])
 def delete_log(name):
     if not name.split('.')[0] in ['0b679131-af02-4f1a-bba2-f8d1441b0ca7', '1ab2f9dd-62ff-4433-8d88-605744403ab2', '1c65003f-2c69-449a-9e8b-7dc8ddda07d4']:
         fullPath = os.path.join('uploads', 'logs', name)
@@ -155,7 +161,7 @@ def use_log(filename):
         selected_files.remove(filename)
     else:
         selected_files.append(filename)
-
+    print(selected_files)
     return redirect(url_for('index'))
     
     

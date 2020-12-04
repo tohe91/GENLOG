@@ -57,6 +57,7 @@ def logs(path):
             ctime = datetime.fromtimestamp(os.path.getctime(fullPath)).strftime('%Y-%m-%d  %H:%M:%S')
             check = 'O'
             delete = 'DELETE'
+            
             if entry in app.selected_files:
                 check = '\u2713'
             if entry.split('.')[0] in ['0b679131-af02-4f1a-bba2-f8d1441b0ca7', '1ab2f9dd-62ff-4433-8d88-605744403ab2', '1c65003f-2c69-449a-9e8b-7dc8ddda07d4']:
@@ -93,9 +94,17 @@ def file_size_conversion(size):
 def create_logs_table():
 
     items = logs('uploads/logs')
-    return ItemTable(items)
+    table_items = ItemTable(items).__html__()
+    table_items = table_items.replace('/delete_log', 'delete_log')
+    table_items = table_items.replace('/uploads/logs', 'uploads/logs')
+    table_items = table_items.replace('/use_log', 'use_log')
+    return table_items
 
 def create_runs_table():
 
     items = runs('uploads/html')
-    return ItemTableRuns(items)
+    table_items = ItemTableRuns(items).__html__()
+    table_items = table_items.replace('/delete_run', 'delete_run')
+    table_items = table_items.replace('/uploads/runs', 'uploads/runs')
+    return table_items
+

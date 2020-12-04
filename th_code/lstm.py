@@ -115,7 +115,7 @@ def train_models2(path, path2, file):
                 ax.scatter(range(len(yhat)), yhat, color='blue')
 
             ax.plot(range(len(y)), y, color='red', linewidth=3, label='original data')
-            fig.savefig('uploads/vis' + file_name + '.png')
+            fig.savefig('uploads/vis/' + file_name + '.png')
 
 def generate_data(path, path2, path3, files):
     
