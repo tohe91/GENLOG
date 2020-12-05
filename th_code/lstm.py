@@ -97,7 +97,7 @@ def train_models2(path, path2, file):
             X = X.reshape((X.shape[0], X.shape[1], n_features))
 
             custom_lines = [Line2D([0], [0], color='red', lw=4), Line2D([0], [0], color='blue', lw=4)]
-
+            plt.rcParams.update({'font.size': 24})
             fig, ax = plt.subplots(figsize=(30,9))
             ax.legend(custom_lines, ['real data', 'generated data'])
             ax.set(xlabel='time (100ms)', ylabel=y_label)
@@ -108,14 +108,15 @@ def train_models2(path, path2, file):
                 model.add(Dense(1))
                 model.compile(optimizer='adam', loss='mse')
                 callbacks = [EarlyStopping(monitor='loss', patience=5)]
-                model.fit(X, y, epochs=10, verbose=0, callbacks=callbacks)
+                model.fit(X, y, epochs=15, verbose=0, callbacks=callbacks)
 
                 yhat = model.predict(X, verbose=0)
     
-                ax.scatter(range(len(yhat)), yhat, color='blue')
+                ax.plot(range(len(yhat)), yhat, color='blue', linewidth=3)
 
             ax.plot(range(len(y)), y, color='red', linewidth=3, label='original data')
-            fig.savefig('uploads/vis' + file_name + '.png')
+            fig.savefig('uploads/vis/' + file_name + '.pdf')
+            fit.savefig('uploads/vis/' + file_name + '.png')
 
 def generate_data(path, path2, path3, files):
     

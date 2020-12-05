@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from datetime import datetime
 import app
+import json
 
 class ItemTable(Table):
     check = ButtonCol('Use', 'use_log', url_kwargs=dict(filename='name'), attr='check', column_html_attrs = {'class': 'no_pad'})
@@ -57,10 +58,15 @@ def logs(path):
             ctime = datetime.fromtimestamp(os.path.getctime(fullPath)).strftime('%Y-%m-%d  %H:%M:%S')
             check = 'O'
             delete = 'DELETE'
-            if entry in app.selected_files:
+            
+            selection = []
+            with open('conf/selection.json') as file:
+                selection = json.load(file)
+
+            if entry in selection:
                 check = '\u2713'
             if entry.split('.')[0] in ['0b679131-af02-4f1a-bba2-f8d1441b0ca7', '1ab2f9dd-62ff-4433-8d88-605744403ab2', '1c65003f-2c69-449a-9e8b-7dc8ddda07d4']:
-                delete = None
+                delete = 'empty'
           
             item = Item(check, entry, file_size_conversion(size), ctime, 'DOWNLOAD', delete)
             allFiles.append(item)
@@ -74,10 +80,14 @@ def runs(path):
         if os.path.isdir(fullPath):
             allFiles = allFiles + logs(fullPath)
         else:
+            delete = 'DELETE'
+            if entry.split('.')[0] in ['0b679131-af02-4f1a-bba2-f8d1441b0ca7_1', '1ab2f9dd-62ff-4433-8d88-605744403ab2_1', '1c65003f-2c69-449a-9e8b-7dc8ddda07d4_1']:
+                delete = 'empty'
+
             run_index = entry.split('_')[1].split('.')[0]
             label = 'Run ' + run_index
             ctime = datetime.fromtimestamp(os.path.getctime(fullPath)).strftime('%Y-%m-%d  %H:%M:%S')
-            item = ItemRuns(entry, label, ctime, 'OPEN', 'DELETE')
+            item = ItemRuns(entry, label, ctime, 'OPEN', delete)
             allFiles.append(item)
     return allFiles
 
@@ -93,9 +103,19 @@ def file_size_conversion(size):
 def create_logs_table():
 
     items = logs('uploads/logs')
-    return ItemTable(items)
+    table_items = ItemTable(items).__html__()
+    table_items = table_items.replace('/delete_log', 'delete_log')
+    table_items = table_items.replace('/uploads/logs', 'uploads/logs')
+    table_items = table_items.replace('/use_log', 'use_log')
+    table_items = table_items.replace('<button type="submit">empty</button>', '')
+    return table_items
 
 def create_runs_table():
 
     items = runs('uploads/html')
-    return ItemTableRuns(items)
+    table_items = ItemTableRuns(items).__html__()
+    table_items = table_items.replace('/delete_run', 'delete_run')
+    table_items = table_items.replace('/uploads/runs', 'uploads/runs')
+    table_items = table_items.replace('<button type="submit">empty</button>', '')
+    return table_items
+
