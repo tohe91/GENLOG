@@ -7,7 +7,7 @@ import glob
 def create_notebook(file, filename):
     nb = nbf.v4.new_notebook()
 
-    text = "#LONG SHORT TERM MEMMORY"
+    text = "#LONG SHORT TERM MEMORY"
 
     code1 = "from app import extract, resample, train, gen\nfile = '" + file + "'\nfilename = '" + filename + "'"
     

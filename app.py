@@ -161,7 +161,10 @@ def use_log(filename):
         selected_files.remove(filename)
     else:
         selected_files.append(filename)
-    print(selected_files)
+
+    with open('conf/selection.json', 'w') as file:
+        json.dump(selected_files, file)
+
     return redirect(url_for('index'))
     
     
