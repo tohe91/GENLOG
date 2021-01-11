@@ -17,6 +17,10 @@ if not os.path.exists("uploads/logs/"):
 if not os.path.exists("uploads/html/"):
     os.makedirs("uploads/html/")
 
+with open('conf/selection.json', 'w') as file:
+    json.dump([], file)
+
+
 #app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
 genlog = Blueprint('genlog', __name__)
 app.register_blueprint(genlog, url_prefix='/genlog')
@@ -77,7 +81,7 @@ def page_not_found(e):
     return render_template('landing.html')
 
 def pipeline(file, filename):
-
+        os.makedirs('uploads/' + filename)
         nblstm.create_notebook(file, filename)
         selected_files.remove(file)
 

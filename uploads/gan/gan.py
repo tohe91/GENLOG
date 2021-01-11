@@ -153,8 +153,8 @@ def train(g_model, d_model, gan_model, latent_dim, n_epochs=1000000, n_batch=173
 
 
 
-physical_devices = tf.config.list_physical_devices('GPU') 
-tf.config.experimental.set_memory_growth(physical_devices[0], True)
+#physical_devices = tf.config.list_physical_devices('GPU') 
+#tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 latent_dim = 5
 discriminator = define_discriminator()

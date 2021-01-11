@@ -101,22 +101,24 @@ def train_models2(path, path2, file):
             fig, ax = plt.subplots(figsize=(30,9))
             ax.legend(custom_lines, ['real data', 'generated data'])
             ax.set(xlabel='time (100ms)', ylabel=y_label)
-
-            for i in range(80):
+            num_of_models = 100 
+            for i in range(num_of_models):
                 model = Sequential()
                 model.add(LSTM(15, activation='relu', input_shape=(n_steps, n_features)))
                 model.add(Dense(1))
                 model.compile(optimizer='adam', loss='mse')
                 callbacks = [EarlyStopping(monitor='loss', patience=5)]
-                model.fit(X, y, epochs=15, verbose=0, callbacks=callbacks)
+                model.fit(X, y, epochs=12, verbose=0, callbacks=callbacks)
 
                 yhat = model.predict(X, verbose=0)
     
-                ax.plot(range(len(yhat)), yhat, color='blue', linewidth=3)
+                ax.plot(range(len(yhat)), yhat, color='blue', linewidth=4)
+                with open('uploads/' + file_name.split('_')[0] + '/models/lstm/status', 'w') as file:
+                    file.write('_'.join(file_name.split('_')[1:]) + ': ' + str(i+1) + '/' + str(num_of_models))
 
             ax.plot(range(len(y)), y, color='red', linewidth=3, label='original data')
             fig.savefig('uploads/vis/' + file_name + '.pdf')
-            fit.savefig('uploads/vis/' + file_name + '.png')
+            fig.savefig('uploads/vis/' + file_name + '.png')
 
 def generate_data(path, path2, path3, files):
     
