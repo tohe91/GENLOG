@@ -14,7 +14,7 @@ from matplotlib.lines import Line2D
 
 def generator_model():
     model = tf.keras.Sequential()
-    model.add(layers.Dense(7*7*256, use_bias=False, input_shape=(1735,)))
+    model.add(layers.Dense(7*7*256, use_bias=False, input_shape=(1988,)))
     model.add(layers.BatchNormalization())
     model.add(layers.LeakyReLU())
 
@@ -117,7 +117,7 @@ def generate_fake_samples(generator, latent_dim, n):
     return X, y
 
 
-def summarize_performance(epoch, generator, discriminator, latent_dim, n=1735):
+def summarize_performance(epoch, generator, discriminator, latent_dim, n=1988):
     x_real, y_real = generate_real_samples(n)
     _, acc_real = discriminator.evaluate(x_real, y_real, verbose=0)
     x_fake, y_fake = generate_fake_samples(generator, latent_dim, n)
@@ -129,16 +129,17 @@ def summarize_performance(epoch, generator, discriminator, latent_dim, n=1735):
     plt.rcParams.update({'font.size': 24})
     fig, ax = plt.subplots(figsize=(30,9))
     ax.legend(custom_lines, ['real data', 'generated data'])
-    ax.set(xlabel='time (100ms)', ylabel='motor load')
+    ax.set(xlabel='time (100ms)', ylabel='motor load (in W)')
 
 
     plt.scatter(x_fake[:, 0], x_fake[:, 1], color='blue')
-    plt.plot(x_real[:, 0], x_real[:, 1], color='red', linewidth=4)
+    plt.scatter(x_real[:, 0], x_real[:, 1], color='red')
 
-    plt.savefig('vis/gan_epoch_' + str(epoch+1))
+    plt.savefig('vis/gan_epoch_' + str(epoch+1) + '.pdf')
+    plt.savefig('vis/gan_epoch_' + str(epoch+1) + '.png')
 
 
-def train(g_model, d_model, gan_model, latent_dim, n_epochs=1000000, n_batch=1735, n_eval=2000):
+def train(g_model, d_model, gan_model, latent_dim, n_epochs=1000000, n_batch=1988, n_eval=2000):
     half_batch = int(n_batch / 2)
     for i in range(n_epochs):
         x_real, y_real = generate_real_samples(half_batch)

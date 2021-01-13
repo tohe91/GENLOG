@@ -1,5 +1,6 @@
 import imghdr
 import os, json
+import glob
 from flask import Flask, render_template, request, redirect, url_for, abort, send_from_directory, Blueprint
 from werkzeug.utils import secure_filename
 import threading
@@ -115,10 +116,21 @@ def resample(file, filename):
 def train(file, filename):
     path = app.config['UPLOADS'] +  filename + app.config['RESAMPLED_DATA']
     path2 = app.config['UPLOADS'] +  filename + app.config['TRAINED_MODELS']
+
     if not os.path.exists(path2):
         os.makedirs(path2) 
+
     lstm.run(path, path2, os.listdir(path))
     return "training finished"   
+
+@app.route('/epochs', methods=['GET'])   
+def epochs(file, filename):
+    path = app.config['UPLOADS'] +  filename + app.config['RESAMPLED_DATA']
+    path2 = app.config['UPLOADS'] +  filename + app.config['TRAINED_MODELS']
+    if not os.path.exists(path2):
+        os.makedirs(path2) 
+    lstm.run_epoch(path, path2, os.listdir(path))
+    return "epochs finished"   
 
 @app.route('/gen', methods=['GET'])   
 def gen(file, filename):
@@ -132,7 +144,7 @@ def gen(file, filename):
     
 @app.route('/state_eval')
 def state_eval():
-    
+
     return {'logs':landing.create_logs_table(), 'runs':landing.create_runs_table()}
 
 

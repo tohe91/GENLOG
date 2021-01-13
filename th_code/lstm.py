@@ -21,6 +21,8 @@ from matplotlib.lines import Line2D
 def get_resampled_data(path, file):
     return glob.glob(path + file)
 
+def get_all_resampled_data(path, file):
+    return glob.glob(path + file)
 
 def split_series(series, steps):
     X = list()
@@ -71,54 +73,68 @@ def train_models(path, path2, file):
             save_model(model, model_path)
 
 
+def reshape_X(csv_file):
+    df = pd.read_csv(csv_file, header=None)
+    raw_seq = df[1].to_numpy()
+    n_steps = 3
+    X, y = split_series(raw_seq, n_steps)
+    n_features = 1
+    return X.reshape((X.shape[0], X.shape[1], n_features))
+
 def train_models2(path, path2, file):
 
 #    physical_devices = tf.config.list_physical_devices('GPU') 
 #    tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
     csv_files = get_resampled_data(path, file)
+
     
+
+
+
     for csv_file in csv_files:
         file_name = split_path(csv_file)[-1][:-4]
-     
-        if not glob.glob('uploads/models/lstm/' + file_name):
+        csv_files_all = os.listdir('uploads/resampled/' + '_'.join(file_name.split('_')[1:]))
 
-            y_label = 'motor load'
-            if 'Torque' in file:
-                y_label = 'motor torque'
-            if 'Speed' in file:
-                y_label = 'motor speed'
-              
-            df = pd.read_csv(csv_file, header=None)
-            raw_seq = df[1].to_numpy()
-            n_steps = 3
-            X, y = split_series(raw_seq, n_steps)
-            n_features = 1
-            X = X.reshape((X.shape[0], X.shape[1], n_features))
+        y_label = 'motor load (in W)'
+        if 'Torque' in file:
+            y_label = 'motor torque (in Nm)'
+        if 'Speed' in file:
+            y_label = 'motor speed'
+  
+        df = pd.read_csv(csv_file, header=None)
+        raw_seq = df[1].to_numpy()
+        n_steps = 3
+        X, y = split_series(raw_seq, n_steps)
+        n_features = 1
+        X = X.reshape((X.shape[0], X.shape[1], n_features))
 
-            custom_lines = [Line2D([0], [0], color='red', lw=4), Line2D([0], [0], color='blue', lw=4)]
-            plt.rcParams.update({'font.size': 24})
-            fig, ax = plt.subplots(figsize=(30,9))
-            ax.legend(custom_lines, ['real data', 'generated data'])
-            ax.set(xlabel='time (100ms)', ylabel=y_label)
-            num_of_models = 100 
-            for i in range(num_of_models):
-                model = Sequential()
-                model.add(LSTM(15, activation='relu', input_shape=(n_steps, n_features)))
-                model.add(Dense(1))
-                model.compile(optimizer='adam', loss='mse')
-                callbacks = [EarlyStopping(monitor='loss', patience=5)]
-                model.fit(X, y, epochs=12, verbose=0, callbacks=callbacks)
+        custom_lines = [Line2D([0], [0], color='red', lw=4), Line2D([0], [0], color='blue', lw=4)]
+        plt.rcParams.update({'font.size': 24})
+        fig, ax = plt.subplots(figsize=(30,9))
+        ax.legend(custom_lines, ['real data', 'generated data'])
+        ax.set(xlabel='time (100ms)', ylabel=y_label)
+        num_of_models = len(csv_files_all)
+        for i in range(num_of_models):
+            model = Sequential()
+            model.add(LSTM(15, activation='relu', input_shape=(n_steps, n_features)))
+            model.add(Dense(1))
+            model.compile(optimizer='adam', loss='mse')
+            callbacks = [EarlyStopping(monitor='loss', patience=5)]
+            model.fit(X, y, epochs=12, verbose=0, callbacks=callbacks)
 
-                yhat = model.predict(X, verbose=0)
-    
-                ax.plot(range(len(yhat)), yhat, color='blue', linewidth=4)
-                with open('uploads/' + file_name.split('_')[0] + '/models/lstm/status', 'w') as file:
-                    file.write('_'.join(file_name.split('_')[1:]) + ': ' + str(i+1) + '/' + str(num_of_models))
+            X_input = reshape_X('uploads/resampled/' + '_'.join(file_name.split('_')[1:]) + '/' + csv_files_all[i])
+            yhat = model.predict(X_input, verbose=0)
 
-            ax.plot(range(len(y)), y, color='red', linewidth=3, label='original data')
-            fig.savefig('uploads/vis/' + file_name + '.pdf')
-            fig.savefig('uploads/vis/' + file_name + '.png')
+            #   ax.plot(range(len(yhat)), yhat, color='blue', linewidth=4)
+            ax.scatter(range(len(yhat)), yhat, color='blue')
+            with open('uploads/' + file_name.split('_')[0] + '/models/lstm/status', 'w') as file:
+                file.write('_'.join(file_name.split('_')[1:]) + ': ' + str(i+1) + '/' + str(num_of_models))
+
+        #   ax.plot(range(len(y)), y, color='red', linewidth=3, label='original data')
+        ax.scatter(range(len(y)), y, color='red', label='original data')
+        fig.savefig('uploads/vis/' + file_name + '.pdf')
+        fig.savefig('uploads/vis/' + file_name + '.png')
 
 def generate_data(path, path2, path3, files):
     
@@ -160,6 +176,67 @@ def generate_data(path, path2, path3, files):
         #return generate_yaml.get_data(data.keys())
 
 
+def epochs(path, path2, file):
+
+#    physical_devices = tf.config.list_physical_devices('GPU') 
+#    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+
+    csv_files = get_resampled_data(path, file)
+    
+    for csv_file in csv_files:
+        file_name = split_path(csv_file)[-1][:-4]
+     
+        if not glob.glob('uploads/models/lstm/' + file_name):
+
+            y_label = 'motor load (in W)'
+            if 'Torque' in file:
+                y_label = 'motor torque (in Nm)'
+            if 'Speed' in file:
+                y_label = 'motor speed'
+              
+            df = pd.read_csv(csv_file, header=None)
+            raw_seq = df[1].to_numpy()
+            n_steps = 3
+            X, y = split_series(raw_seq, n_steps)
+            n_features = 1
+            X = X.reshape((X.shape[0], X.shape[1], n_features))
+
+           
+            num_of_models = 8 
+            for i in range(num_of_models):
+                custom_lines = [Line2D([0], [0], color='red', lw=4), Line2D([0], [0], color='blue', lw=4)]
+                plt.rcParams.update({'font.size': 24})
+                fig, ax = plt.subplots(figsize=(30,9))
+                ax.legend(custom_lines, ['real data', 'generated data'])
+                ax.set(xlabel='time (100ms)', ylabel=y_label)
+
+                model = Sequential()
+                model.add(LSTM(5, activation='relu', input_shape=(n_steps, n_features)))
+                model.add(Dense(1))
+                model.compile(optimizer='adam', loss='mse')
+                callbacks = [EarlyStopping(monitor='loss', patience=5)]
+                model.fit(X, y, epochs=i, verbose=0, callbacks=callbacks)
+               
+                yhat = model.predict(X, verbose=0)
+    
+               # ax.plot(range(len(yhat)), yhat, color='blue', linewidth=4)
+                ax.scatter(range(len(yhat)), yhat, color='blue')
+                with open('uploads/' + file_name.split('_')[0] + '/models/lstm/status', 'w') as file:
+                    file.write('_'.join(file_name.split('_')[1:]) + ': ' + str(i+1) + '/' + str(num_of_models))
+
+                ax.scatter(range(len(y)), y, color='red', label='original data')
+             #   ax.plot(range(len(y)), y, color='red', linewidth=3, label='original data')
+                fig.savefig('uploads/vis/' + file_name + '.pdf')
+                fig.savefig('uploads/vis/' + file_name + '.png')
+
+
+def run_epoch(path, path2, files):   
+    print("epochs start")    
+    for file in files:                     
+        epochs(path, path2, file)
+    print('\n')
+    print("epochs end")  
+    print("--------------------------------")
 
 def run(path, path2, files):   
     print("lstm training start")    
