@@ -21,6 +21,7 @@ class ItemTableRuns(Table):
     label = Col('Label')
     date = Col('Creation Date')
     open = ButtonCol('Actions', 'download_runs', url_kwargs=dict(filename='name'), attr='open', column_html_attrs = {'class': 'no_pad'})
+    logs = ButtonCol('', 'download_runs_logs', url_kwargs=dict(filename='name'), attr='logs')
     delete = ButtonCol('', 'delete_run', url_kwargs=dict(name='name'), attr='delete')
 
     
@@ -37,12 +38,13 @@ class Item(object):
         self.status = status
 
 class ItemRuns(object):
-    def __init__(self, name, label, date, open, delete, check=True):
+    def __init__(self, name, label, date, open, logs, delete, check=True):
         self.name = name
         self.label = label
         self.date = date
         self.delete = delete
         self.open = open
+        self.logs = logs
         self.check = check
 
 
@@ -108,7 +110,7 @@ def runs(path):
             label = 'Run ' + run_index
             ctime = datetime.fromtimestamp(os.path.getctime(fullPath)).strftime('%Y-%m-%d  %H:%M:%S')
             last_runs[entry.split('.')[0].split('_')[0]] = ctime 
-            item = ItemRuns(entry, label, ctime, 'OPEN', delete)
+            item = ItemRuns(entry.split('.')[0], label, ctime, 'EVALUATE', 'DOWNLOAD GEN LOGS', delete)
         allFiles.append(item)
     return allFiles
 
@@ -137,6 +139,7 @@ def create_runs_table():
     table_items = ItemTableRuns(items).__html__()
     table_items = table_items.replace('/delete_run', 'delete_run')
     table_items = table_items.replace('/uploads/runs', 'uploads/runs')
+    table_items = table_items.replace('/uploads/runs/logs', 'uploads/runs/logs')
     table_items = table_items.replace('<button type="submit">empty</button>', '')
     return table_items
 

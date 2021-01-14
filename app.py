@@ -8,6 +8,7 @@ import th_code.time_series_single_runs as time_series_single_runs
 import th_code.time_series_custom_extraction as time_series_custom_extraction
 import th_code.time_series_resample as time_series_resample
 import th_code.lstm as lstm
+import th_code.generate_yaml as gen_yaml
 import landing
 import notebooks_lstm as nblstm
 
@@ -25,13 +26,14 @@ with open('conf/selection.json', 'w') as file:
 #app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
 genlog = Blueprint('genlog', __name__)
 app.register_blueprint(genlog, url_prefix='/genlog')
-app.config['UPLOAD_EXTENSIONS'] = ['.xes', '.yaml']
+app.config['UPLOAD_EXTENSIONS'] = ['.yaml']
 app.config['UPLOADS'] = 'uploads/'
 app.config['FILES'] = 'logs/'
 app.config['EXTRACTED_METRICS'] = '/single_runs/'
 app.config['RESAMPLED_DATA'] = '/resampled/'
 app.config['TRAINED_MODELS'] = '/models/lstm/'
 app.config['GENERATED_DATA'] = '/generated/'
+app.config['GENERATED_LOGS'] = '/generated_logs/'
 app.config['HTML'] = 'html/'
 app.config['STATE'] = 'start'
 
@@ -116,21 +118,41 @@ def resample(file, filename):
 def train(file, filename):
     path = app.config['UPLOADS'] +  filename + app.config['RESAMPLED_DATA']
     path2 = app.config['UPLOADS'] +  filename + app.config['TRAINED_MODELS']
-
+    path3 = app.config['UPLOADS'] +  filename + app.config['GENERATED_DATA']
+    
     if not os.path.exists(path2):
         os.makedirs(path2) 
+    if not os.path.exists(path3):
+        os.makedirs(path3) 
 
-    lstm.run(path, path2, os.listdir(path))
+    lstm.run(path, path2, path3, os.listdir(path))
     return "training finished"   
 
-@app.route('/epochs', methods=['GET'])   
-def epochs(file, filename):
-    path = app.config['UPLOADS'] +  filename + app.config['RESAMPLED_DATA']
-    path2 = app.config['UPLOADS'] +  filename + app.config['TRAINED_MODELS']
-    if not os.path.exists(path2):
-        os.makedirs(path2) 
-    lstm.run_epoch(path, path2, os.listdir(path))
-    return "epochs finished"   
+@app.route('/yaml', methods=['GET'])   
+def yaml(file, filename):
+    path = app.config['UPLOADS'] +  filename + app.config['GENERATED_DATA']
+    path2 = app.config['UPLOADS'] + app.config['GENERATED_LOGS']
+    path3 = app.config['UPLOADS'] +  filename + app.config['GENERATED_LOGS']
+    if not os.path.exists(path):
+        os.makedirs(path) 
+    if not os.path.exists(path3):
+        os.makedirs(path3) 
+    
+    gen_yaml.get_data(path, path2, path3, read_metrics(), filename)
+    return "yaml finished"  
+
+@app.route('/yaml2', methods=['GET'])   
+def yaml2():
+    path = app.config['UPLOADS'] + 'fc1c330d-18ed-48ed-9671-4ba3005323f6' + app.config['GENERATED_DATA']
+    path2 = app.config['UPLOADS'] + app.config['GENERATED_LOGS']
+    path3 = app.config['UPLOADS'] +  'fc1c330d-18ed-48ed-9671-4ba3005323f6' + app.config['GENERATED_LOGS']
+    if not os.path.exists(path):
+        os.makedirs(path) 
+    if not os.path.exists(path3):
+        os.makedirs(path3) 
+    
+    gen_yaml.get_data(path, path2, path3, read_metrics(), 'fc1c330d-18ed-48ed-9671-4ba3005323f6')
+    return "yaml finished"   
 
 @app.route('/gen', methods=['GET'])   
 def gen(file, filename):
@@ -165,9 +187,13 @@ def delete_run(name):
 def download_logs(filename):
     return send_from_directory(app.config['UPLOADS'] + app.config['FILES'], filename)
 
-@app.route('/uploads/runs/<filename>', methods=['GET', 'POST'])
+@app.route('/uploads/runs/<filename>.html', methods=['GET', 'POST'])
 def download_runs(filename):
-      return send_from_directory(app.config['UPLOADS'] + app.config['HTML'], filename)
+      return send_from_directory(app.config['UPLOADS'] + app.config['HTML'], filename + '.html')
+
+@app.route('/uploads/runs/logs/<filename>.zip', methods=['GET', 'POST'])
+def download_runs_logs(filename):
+      return send_from_directory(app.config['UPLOADS'] + app.config['GENERATED_LOGS'], filename + '.zip')
 
 
 @app.route('/use_log/<filename>', methods=['GET', 'POST'])

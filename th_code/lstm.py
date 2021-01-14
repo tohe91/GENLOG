@@ -81,10 +81,11 @@ def reshape_X(csv_file):
     n_features = 1
     return X.reshape((X.shape[0], X.shape[1], n_features))
 
-def train_models2(path, path2, file):
+def train_models2(path, path2, path3, file):
 
-#    physical_devices = tf.config.list_physical_devices('GPU') 
-#    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+    physical_devices = tf.config.list_physical_devices('GPU') 
+    if (len(physical_devices) > 0):
+        tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
     csv_files = get_resampled_data(path, file)
 
@@ -125,6 +126,8 @@ def train_models2(path, path2, file):
 
             X_input = reshape_X('uploads/resampled/' + '_'.join(file_name.split('_')[1:]) + '/' + csv_files_all[i])
             yhat = model.predict(X_input, verbose=0)
+            
+            pd.DataFrame(yhat).to_csv(path3 + file_name + '_' + str(i) + '.csv', header=None)
 
             #   ax.plot(range(len(yhat)), yhat, color='blue', linewidth=4)
             ax.scatter(range(len(yhat)), yhat, color='blue')
@@ -238,10 +241,10 @@ def run_epoch(path, path2, files):
     print("epochs end")  
     print("--------------------------------")
 
-def run(path, path2, files):   
+def run(path, path2, path3, files):   
     print("lstm training start")    
     for file in files:                     
-        train_models2(path, path2, file)
+        train_models2(path, path2, path3, file)
     print('\n')
     print("lstm training end")  
     print("--------------------------------")
