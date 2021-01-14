@@ -35,7 +35,7 @@ def get_data(path, path2, path3, metrics, filename):
             filename2 = filename + '_' + metric.replace('/', '_') + '_' + str(i) + '.csv'
             dfs[metric] = pd.read_csv(path + filename2, header=None)   
             
-        write_back(dfs, metrics, folder_path, filename + '_' + str(i))
+        write_back(dfs, metrics, folder_path, filename + '-genlog' + str(i))
          
     i = 1
     while(i < 100):
@@ -128,7 +128,7 @@ def write_back(data, metrics, folder_path, filename2, file = None, depth = 0, f 
     dump_file = open(folder_path + filename2 + '.xes.yaml',"w")
     data = resample(data, metrics)
     
-    metric_indecies = list(np.zeros(len(metrics)))
+    metric_indecies = list(np.ones(len(metrics)))
     with open('uploads/templates/batch15.yaml') as stream:
         docs = yaml.load_all(stream)
         for doc in docs:
@@ -144,8 +144,8 @@ def write_back(data, metrics, folder_path, filename2, file = None, depth = 0, f 
                                             if v3['name'] == metrics[k]:
                                                # print(data[metrics[k]][1][metric_indecies[k]])
                                                 if len(data[metrics[k]][1]) > metric_indecies[k]:
-                                                    v3['value'] = str(data[metrics[k]][1][metric_indecies[k]])
-                                                    v3['timestamp'] = str(data[metrics[k]][0][metric_indecies[k]]).replace(' ', 'T')[:-3]
+                                                    v3['value'] = float(data[metrics[k]][1][metric_indecies[k]])
+                                                    v3['timestamp'] = str(data[metrics[k]][0][metric_indecies[k]]).replace(' ', 'T')[:-3] + '+01:00'
                                                 metric_indecies[k] = metric_indecies[k] + 1
             dump_file.write("---\n")
             yaml.dump(doc, dump_file)

@@ -12,7 +12,7 @@ def resample(path, path2, files):
         
         for file in files:
             df = pd.read_csv(path + file)
-            
+            df = df.drop_duplicates(subset=['timestamp'])
             df.index = df.timestamp
             df = df.drop('timestamp', axis=1)
             df.index = pd.to_datetime(df.index)

@@ -95,7 +95,11 @@ def train_models2(path, path2, path3, file):
 
     for csv_file in csv_files:
         file_name = split_path(csv_file)[-1][:-4]
-        csv_files_all = os.listdir('uploads/resampled/' + '_'.join(file_name.split('_')[1:]))
+        choice = '_'.join(file_name.split('_')[1:])
+        if choice[0].isnumeric():
+            choice = choice[2:]
+
+        csv_files_all = os.listdir('uploads/resampled/' + choice)
 
         y_label = 'motor load (in W)'
         if 'Torque' in file:
@@ -124,7 +128,7 @@ def train_models2(path, path2, path3, file):
             callbacks = [EarlyStopping(monitor='loss', patience=5)]
             model.fit(X, y, epochs=12, verbose=0, callbacks=callbacks)
 
-            X_input = reshape_X('uploads/resampled/' + '_'.join(file_name.split('_')[1:]) + '/' + csv_files_all[i])
+            X_input = reshape_X('uploads/resampled/' + choice + '/' + csv_files_all[i])
             yhat = model.predict(X_input, verbose=0)
             
             pd.DataFrame(yhat).to_csv(path3 + file_name + '_' + str(i) + '.csv', header=None)
