@@ -1,5 +1,5 @@
 # GENLOG
-Generating Reliable Process Event Streams andTime Series Data based on Neural Networks
+Generating Reliable Process Event Streams and Time Series Data based on Neural Networks
 
 ## Tool
 The tool can be found here: https://cpee.org/genlog

@@ -86,6 +86,11 @@ def set_status(name):
         if os.path.exists('uploads/' + name + '/models/lstm/status'):
             model_status = open('uploads/' + name + '/models/lstm/status').read()
         status = 'training models - ' + model_status
+    if os.path.exists('uploads/' + name + '/generated_logs'):
+        total = len(os.listdir('uploads/resampled/\Axis_X_aaLoad'))
+        current = len(os.listdir('uploads/' + name + '/generated_logs'))
+        status = 'embedding data into log files ' + str(current) + '/' + str(total)
+
     if not os.path.exists('uploads/' + name):
         if name in last_runs:
             status = 'last run finished at ' + last_runs[name]

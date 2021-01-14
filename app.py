@@ -135,6 +135,8 @@ def yaml(file, filename):
     path3 = app.config['UPLOADS'] +  filename + app.config['GENERATED_LOGS']
     if not os.path.exists(path):
         os.makedirs(path) 
+    if not os.path.exists(path2):
+        os.makedirs(path3) 
     if not os.path.exists(path3):
         os.makedirs(path3) 
     
@@ -179,7 +181,7 @@ def delete_log(name):
 
 @app.route('/delete_run/<name>', methods=['GET', 'POST'])
 def delete_run(name):
-    fullPath = os.path.join('uploads', 'html', name)
+    fullPath = os.path.join('uploads', 'html', name + '.html')
     os.remove(fullPath)
     return redirect(url_for('index'))
 
