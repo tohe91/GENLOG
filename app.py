@@ -136,7 +136,7 @@ def yaml(file, filename):
     if not os.path.exists(path):
         os.makedirs(path) 
     if not os.path.exists(path2):
-        os.makedirs(path3) 
+        os.makedirs(path2) 
     if not os.path.exists(path3):
         os.makedirs(path3) 
     
