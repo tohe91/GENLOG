@@ -63,7 +63,7 @@ def extract_first_last(metrics):
     datetimeFormat = '%Y-%m-%dT%H:%M:%S.%f'
    
     with open('uploads/templates/batch15.yaml') as stream:
-        docs = yaml.load_all(stream)
+        docs = yaml.load_all(stream, Loader=yaml.SafeLoader)
         for doc in docs:
             for k,v in doc.items():      
                 if 'data' in v:  
@@ -130,7 +130,7 @@ def write_back(data, metrics, folder_path, filename2, file = None, depth = 0, f 
     
     metric_indecies = list(np.ones(len(metrics)))
     with open('uploads/templates/batch15.yaml') as stream:
-        docs = yaml.load_all(stream)
+        docs = yaml.load_all(stream, Loader=yaml.SafeLoader)
         for doc in docs:
             for k,v in doc.items():      
                 if 'data' in v:  
