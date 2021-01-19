@@ -159,6 +159,7 @@ def create_runs_table():
 
     items = runs('uploads/html')
     table_items = ItemTableRuns(items).__html__()
+    table_items = table_items.replace('/stop_run', 'stop_run')
     table_items = table_items.replace('/delete_run', 'delete_run')
     table_items = table_items.replace('/uploads/runs', 'uploads/runs')
     table_items = table_items.replace('/uploads/runs/logs', 'uploads/runs/logs')
