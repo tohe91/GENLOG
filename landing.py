@@ -12,8 +12,8 @@ class ItemTable(Table):
     size = Col('Size')
     date = Col('Upload Date')
     open = ButtonCol('Actions', 'download_logs', url_kwargs=dict(filename='name'), attr='open', column_html_attrs = {'class': 'no_pad'})
-    delete = ButtonCol('', 'delete_log', url_kwargs=dict(name='name'), attr='delete'),
-    status = Col('Status')
+    delete = ButtonCol('', 'delete_log', url_kwargs=dict(name='name'), attr='delete')
+   # status = Col('Status')
     
 
 class ItemTableRuns(Table):
@@ -23,29 +23,32 @@ class ItemTableRuns(Table):
     open = ButtonCol('Actions', 'download_runs', url_kwargs=dict(filename='name'), attr='open', column_html_attrs = {'class': 'no_pad'})
     logs = ButtonCol('', 'download_runs_logs', url_kwargs=dict(filename='name'), attr='logs')
     delete = ButtonCol('', 'delete_run', url_kwargs=dict(name='name'), attr='delete')
+    stop = ButtonCol('', 'stop_run', url_kwargs=dict(name='name'), attr='stop')
+    status = Col('Status')
 
     
 
 
 class Item(object):
-    def __init__(self, check, name, size, date, open, delete, status):
+    def __init__(self, check, name, size, date, open, delete):
         self.check = check
         self.name = name
         self.size = size
         self.date = date
         self.open = open
         self.delete = delete
-        self.status = status
+    #    self.status = status
 
 class ItemRuns(object):
-    def __init__(self, name, label, date, open, logs, delete, check=True):
+    def __init__(self, name, label, date, open, logs, delete, status, stop):
         self.name = name
         self.label = label
         self.date = date
         self.delete = delete
         self.open = open
         self.logs = logs
-        self.check = check
+        self.status = status
+        self.stop = stop
 
 
 def logs(path):
@@ -70,8 +73,8 @@ def logs(path):
                 check = '\u2713'
             if entry.split('.')[0] in ['0b679131-af02-4f1a-bba2-f8d1441b0ca7', '1ab2f9dd-62ff-4433-8d88-605744403ab2', '1c65003f-2c69-449a-9e8b-7dc8ddda07d4']:
                 delete = 'empty'
-            status = set_status(entry.split('.')[0])
-            item = Item(check, entry, file_size_conversion(size), ctime, 'DOWNLOAD', delete, status)
+          #  status = set_status(entry.split('.')[0])
+            item = Item(check, entry, file_size_conversion(size), ctime, 'DOWNLOAD', delete)
             allFiles.append(item)
     return allFiles
 
@@ -91,11 +94,11 @@ def set_status(name):
         current = len(os.listdir('uploads/' + name + '/generated_logs'))
         status = 'embedding data into log files ' + str(current) + '/' + str(total)
 
-    if not os.path.exists('uploads/' + name):
-        if name in last_runs:
-            status = 'last run finished at ' + last_runs[name]
-        else:
-            status = ''
+        with open('uploads/html/' + name + '.html', 'r') as reader:
+            if reader.readline() != '':
+                if not os.path.exists('uploads/' + name):
+                    if not name in last_runs:
+                        status = ''
     return status
     
 
@@ -107,15 +110,29 @@ def runs(path):
         if os.path.isdir(fullPath):
             allFiles = allFiles + logs(fullPath)
         else:
-            delete = 'DELETE'
-            if entry.split('.')[0] in ['0b679131-af02-4f1a-bba2-f8d1441b0ca7_1', '1ab2f9dd-62ff-4433-8d88-605744403ab2_1', '1c65003f-2c69-449a-9e8b-7dc8ddda07d4_1']:
-                delete = 'empty'
+            running = False
+            with open(fullPath, 'r') as reader:
+                if reader.readline() == '':
+                    running = True
+            if running:
+                run_index = entry.split('_')[1].split('.')[0]
+                label = 'Run ' + run_index
+                ctime = datetime.fromtimestamp(os.path.getctime(fullPath)).strftime('%Y-%m-%d  %H:%M:%S')
+                last_runs[entry.split('.')[0]] = ctime 
+                status = set_status(entry.split('.')[0])
+                item = ItemRuns(entry.split('.')[0], label, ctime, 'empty', 'empty', 'empty', status, 'STOP')
+            else:
+                delete = 'DELETE'
+                if entry.split('.')[0] in ['0b679131-af02-4f1a-bba2-f8d1441b0ca7_1', '1ab2f9dd-62ff-4433-8d88-605744403ab2_1', '1c65003f-2c69-449a-9e8b-7dc8ddda07d4_1']:
+                    delete = 'empty'
 
-            run_index = entry.split('_')[1].split('.')[0]
-            label = 'Run ' + run_index
-            ctime = datetime.fromtimestamp(os.path.getctime(fullPath)).strftime('%Y-%m-%d  %H:%M:%S')
-            last_runs[entry.split('.')[0].split('_')[0]] = ctime 
-            item = ItemRuns(entry.split('.')[0], label, ctime, 'EVALUATE', 'DOWNLOAD GEN LOGS', delete)
+                run_index = entry.split('_')[1].split('.')[0]
+                label = 'Run ' + run_index
+                ctime = datetime.fromtimestamp(os.path.getctime(fullPath)).strftime('%Y-%m-%d  %H:%M:%S')
+                last_runs[entry.split('.')[0]] = ctime 
+                status = ''
+                item = ItemRuns(entry.split('.')[0], label, ctime, 'EVALUATE', 'DOWNLOAD GEN LOGS', delete, status, 'empty')
+            
         allFiles.append(item)
     return allFiles
 

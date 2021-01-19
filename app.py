@@ -11,6 +11,8 @@ import th_code.lstm as lstm
 import th_code.generate_yaml as gen_yaml
 import landing
 import notebooks_lstm as nblstm
+from shutil import rmtree
+import multiprocessing 
 
 app = Flask(__name__)
 
@@ -22,6 +24,8 @@ if not os.path.exists("uploads/html/"):
 with open('conf/selection.json', 'w') as file:
     json.dump([], file)
 
+
+all_processes = {} 
 
 #app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
 genlog = Blueprint('genlog', __name__)
@@ -38,7 +42,6 @@ app.config['HTML'] = 'html/'
 app.config['STATE'] = 'start'
 
 selected_files = []
-
 last_num_of_files = [0,0,0,0,0]
 
 def split_list(liste, iscsv=True):
@@ -74,8 +77,21 @@ def upload_files():
 def start_run():
     for file in selected_files:
         filename = file.split('.')[0]
-        x = threading.Thread(target=pipeline, args=[file, filename])
-        x.start()
+        i = 1
+        while(i < 100):
+            if not glob.glob('uploads/html/' + filename + '_' + str(i) + '.html'):
+                break
+            i += 1
+        filename = filename + '_' + str(i)    
+        with open('uploads/html/' + filename + '.html', 'w', encoding='utf-8') as f:
+            f.write('')
+        #x = threading.Thread(target=pipeline, args=[file, filename])
+      #  x.start()
+        selected_files.remove(file)
+        process = multiprocessing.Process(target=pipeline, args=[file, filename]) 
+        process.start() 
+        all_processes[filename] = process
+        
     return redirect(url_for('index'))
 
     
@@ -84,9 +100,11 @@ def page_not_found(e):
     return render_template('landing.html')
 
 def pipeline(file, filename):
-        os.makedirs('uploads/' + filename)
+
+        if not os.path.exists('uploads/' + filename):
+            os.makedirs('uploads/' + filename)
         nblstm.create_notebook(file, filename)
-        selected_files.remove(file)
+        #selected_files.remove(file)
 
 
 
@@ -98,7 +116,7 @@ def read_metrics():
         return [metric.replace('/', '_') for metric in metrics] 
    
 @app.route('/extract', methods=['GET'])   
-def extract(file, filename):
+def extract(file, filename): 
     path = app.config['UPLOADS'] + filename + app.config['EXTRACTED_METRICS']
     if not os.path.exists(path):
         os.makedirs(path) 
@@ -125,7 +143,7 @@ def train(file, filename):
     if not os.path.exists(path3):
         os.makedirs(path3) 
 
-    lstm.run(path, path2, path3, os.listdir(path))
+    lstm.run(path, path2, path3, os.listdir(path), filename)
     return "training finished"   
 
 @app.route('/yaml', methods=['GET'])   
@@ -168,7 +186,6 @@ def gen(file, filename):
     
 @app.route('/state_eval')
 def state_eval():
-
     return {'logs':landing.create_logs_table(), 'runs':landing.create_runs_table()}
 
 
@@ -181,11 +198,31 @@ def delete_log(name):
 
 @app.route('/delete_run/<name>', methods=['GET', 'POST'])
 def delete_run(name):
-    fullPath = os.path.join('uploads', 'html', name + '.html')
-    os.remove(fullPath)
+    delete_runs_files(name)
     return redirect(url_for('index'))
 
-@app.route('/uploads/logs/<filename>', methods=['GET', 'POST'])
+@app.route('/stop_run/<name>', methods=['GET', 'POST'])
+def stop_run(name):
+    all_processes[name].terminate()
+    if os.path.exists('uploads/html/' + name + '.html'):    
+        os.remove('uploads/html/' + name + '.html')
+    delete_timer = threading.Timer(10,delete_runs_files, args=[name])
+    delete_timer.start()
+
+    return redirect(url_for('index'))
+
+def delete_runs_files(name):
+    if os.path.exists('uploads/' + name + "/"):
+        rmtree('uploads/' + name + "/")
+
+    if os.path.exists('uploads/html/' + name + '.html'):    
+        os.remove('uploads/html/' + name + '.html')
+
+    if os.path.exists(app.config['UPLOADS'] + app.config['GENERATED_LOGS'] + name + '.zip'):   
+        os.remove(app.config['UPLOADS'] + app.config['GENERATED_LOGS'] + name + '.zip')
+
+
+@app.route('/uploads/logs2/<filename>', methods=['GET', 'POST'])
 def download_logs(filename):
     return send_from_directory(app.config['UPLOADS'] + app.config['FILES'], filename)
 

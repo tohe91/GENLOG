@@ -81,7 +81,7 @@ def reshape_X(csv_file):
     n_features = 1
     return X.reshape((X.shape[0], X.shape[1], n_features))
 
-def train_models2(path, path2, path3, file):
+def train_models2(path, path2, path3, file, filename):
 
     physical_devices = tf.config.list_physical_devices('GPU') 
     if (len(physical_devices) > 0):
@@ -131,13 +131,13 @@ def train_models2(path, path2, path3, file):
 
             #   ax.plot(range(len(yhat)), yhat, color='blue', linewidth=4)
             ax.scatter(range(len(yhat)), yhat, color='blue')
-            with open('uploads/' + file_name.split('_')[0] + '/models/lstm/status', 'w') as file:
+            with open(path2 + '/status', 'w') as file:
                 file.write('_'.join(file_name.split('_')[1:]) + ': ' + str(i+1) + '/' + str(num_of_models))
 
         #   ax.plot(range(len(y)), y, color='red', linewidth=3, label='original data')
         ax.scatter(range(len(y)), y, color='red', label='original data')
-        fig.savefig('uploads/vis/' + file_name + '.pdf')
-        fig.savefig('uploads/vis/' + file_name + '.png')
+        fig.savefig('uploads/vis/' + filename + '.pdf')
+        fig.savefig('uploads/vis/' + filename + '.png')
 
 def generate_data(path, path2, path3, files):
     
@@ -241,10 +241,10 @@ def run_epoch(path, path2, files):
     print("epochs end")  
     print("--------------------------------")
 
-def run(path, path2, path3, files):   
+def run(path, path2, path3, files, filename):   
     print("lstm training start")    
     for file in files:                     
-        train_models2(path, path2, path3, file)
+        train_models2(path, path2, path3, file, filename)
     print('\n')
     print("lstm training end")  
     print("--------------------------------")

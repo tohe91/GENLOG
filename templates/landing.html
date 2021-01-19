@@ -18,16 +18,16 @@
       <h2>File Upload</h2>
       <form method="POST" action="" enctype="multipart/form-data" onsubmit="startInterval()">
         <span><input type="file" name="file"></span>
-        <span><input type="submit" value="Upload"></span>
+        <span><input type="submit"  value="Upload"></span>
       </form>
     </div>
     <br>
     <div id="logs"></div>
     <div>
       <br>
-      <form method="POST" action="start_run" enctype="multipart/form-data" onsubmit="startInterval()">
+      <form method="POST" id='start_form' action="start_run" enctype="multipart/form-data" onsubmit="startInterval()">
         <span>Use one or many of the above Files for a new training run</span>
-        <span><input type="submit" value="Start Training Run"></span>
+        <span><input type="submit" id="start" value="Start Training Run"></span>
       </form>
     </div>
     <br>

@@ -32,18 +32,12 @@ def get_data(path, path2, path3, metrics, filename):
         dfs = {}
         for metric in metrics:
             
-            filename2 = filename + '_' + metric.replace('/', '_') + '_' + str(i) + '.csv'
+            filename2 = '_'.join(filename.split('_')[:-1]) + '_' + metric.replace('/', '_') + '_' + str(i) + '.csv'
             dfs[metric] = pd.read_csv(path + filename2, header=None)   
             
         write_back(dfs, metrics, folder_path, filename + '-genlog' + str(i))
          
-    i = 1
-    while(i < 100):
-        if not glob.glob('uploads/html/' + filename + '_' + str(i) + '.html'):
-            break
-        i += 1
-
-    with ZipFile(path2 + filename + '_' + str(i) +  '.zip','w') as zip: 
+    with ZipFile(path2 + filename + '.zip','w') as zip: 
         for file in os.listdir(path3): 
             zip.write(path3 + file, os.path.basename(path3 + file)) 
     
