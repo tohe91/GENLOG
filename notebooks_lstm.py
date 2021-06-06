@@ -11,7 +11,7 @@ def create_notebook(file, filename):
 
     text = "#LONG SHORT TERM MEMORY"
 
-    code1 = "from app import extract, resample, train, yaml\nfile = '" + file + "'\nfilename = '" + filename + "'"
+    code1 = "from app import extract, resample, train, yaml, evaluating\nfile = '" + file + "'\nfilename = '" + filename + "'"
     
 
     code2 = "extract(file, filename)"
@@ -19,8 +19,10 @@ def create_notebook(file, filename):
     code3 = "resample(file, filename)"
 
     code4 = "train(file, filename)"
+    
+    code5 = "evaluating(file, filename)"
 
-    code5 = "yaml(file, filename)"
+    code6 = "yaml(file, filename)"
     
 
     nb['cells'] = [nbf.v4.new_markdown_cell(text),
@@ -29,6 +31,7 @@ def create_notebook(file, filename):
                 nbf.v4.new_code_cell(code3),
                 nbf.v4.new_code_cell(code4),   
                 nbf.v4.new_code_cell(code5),
+            #    nbf.v4.new_code_cell(code6),
                 ]
                 
     #nbf.write(nb, '../lstm.ipynb')

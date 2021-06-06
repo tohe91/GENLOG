@@ -99,6 +99,11 @@ def set_status(name):
                 if not os.path.exists('uploads/' + name):
                     if not name in last_runs:
                         status = ''
+    if os.path.exists('uploads/' + name + '/eval'):
+        status = 'evaluating'
+        if os.path.exists('uploads/' + name + '/eval/status'):
+            status = status + ' - ' + open('uploads/' + name + '/eval/status').read()
+
     return status
     
 

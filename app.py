@@ -9,6 +9,7 @@ import th_code.time_series_custom_extraction as time_series_custom_extraction
 import th_code.time_series_resample as time_series_resample
 import th_code.lstm as lstm
 import th_code.generate_yaml as gen_yaml
+import th_code.evaluate as evaluate
 import landing
 import notebooks_lstm as nblstm
 from shutil import rmtree
@@ -144,7 +145,19 @@ def train(file, filename):
         os.makedirs(path3) 
 
     lstm.run(path, path2, path3, os.listdir(path), filename)
-    return "training finished"   
+    return "training finished"  
+
+@app.route('/evaluating', methods=['GET'])   
+def evaluating(file, filename):
+    path = app.config['UPLOADS'] +  filename + app.config['RESAMPLED_DATA']
+    path2 = app.config['UPLOADS'] +  filename + app.config['GENERATED_DATA']
+    path3 = app.config['UPLOADS'] +  filename + '/eval/'
+
+    if not os.path.exists(path3):
+        os.makedirs(path3) 
+    
+    evaluate.run(path, path2, path3, read_metrics(), os.listdir(path), filename)
+    return "evaluation finished"      
 
 @app.route('/yaml', methods=['GET'])   
 def yaml(file, filename):
