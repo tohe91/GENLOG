@@ -81,3 +81,16 @@ a:link {
 	  padding:0px;
   }
   
+  .eval {
+	  background-color: #bfb;
+	  border-width: 2px;
+      border-style: solid;
+      border-color: #0d0;
+  }
+ 
+  .del {
+	  background-color: #fbb;
+	  border-width: 2px;
+      border-style: solid;
+      border-color: #d00;
+  }

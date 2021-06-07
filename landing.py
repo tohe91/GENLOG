@@ -1,5 +1,5 @@
 # import things
-from flask_table import Table, Col,LinkCol, ButtonCol
+from flask_table import Table, Col,LinkCol, ButtonCol, table
 import os
 from pathlib import Path
 from datetime import datetime
@@ -158,6 +158,7 @@ def create_logs_table():
     table_items = table_items.replace('/uploads/logs', 'uploads/logs')
     table_items = table_items.replace('/use_log', 'use_log')
     table_items = table_items.replace('<button type="submit">empty</button>', '')
+    table_items = table_items.replace('<button type="submit">DELETE</button>', '<button type="submit" class="del">DELETE</button>')
     return table_items
 
 def create_runs_table():
@@ -169,5 +170,8 @@ def create_runs_table():
     table_items = table_items.replace('/uploads/runs', 'uploads/runs')
     table_items = table_items.replace('/uploads/runs/logs', 'uploads/runs/logs')
     table_items = table_items.replace('<button type="submit">empty</button>', '')
+    table_items = table_items.replace('<button type="submit">EVALUATE</button>', '<button type="submit" class="eval">EVALUATE</button>')
+    table_items = table_items.replace('<button type="submit">DELETE</button>', '<button type="submit" class="del">DELETE</button>')
+    table_items = table_items.replace('<button type="submit">STOP</button>', '<button type="submit" class="del">STOP</button>')
     return table_items
 

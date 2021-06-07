@@ -24,11 +24,13 @@ def run_euclidean(ori_val, gen_val):
     euclidean2 = euclidean2 / euclidean_max
     return euclidean2
 
-def run_dtw(ori_val, gen_val):
+def run_dtw(ori_val, gen_val, metric):
     fontsize = 22
     matplotlib.rcParams.update({'font.size': fontsize})
     fig, axs = plt.subplots(2, 3, figsize=(18,12))
+    fig.suptitle('Dynamic Time Warping for ' + metric)
     min_paths = []
+   
     for i in range(len(gen_val)):
         y = math.floor(i/3)
         x = i % 3
@@ -137,21 +139,21 @@ def run_correlations(ori, gen, metric):
 
 def run_eval(resampled, generated, path3, metric, num_metrics, file, filename):
     metric = metric.replace('/', '_')
+    print('--- EVALUATION FOR', metric, '---')
     ori, ori_val, gen, gen_val = get_data(resampled, generated, metric, num_metrics, file, filename)
     with open(path3 + '/status', 'w') as file:
          file.write(metric + ' - euclidean')
     euclidean_result = run_euclidean(ori_val, gen_val)
-    print(euclidean_result)
+    print('euclidean:', euclidean_result)
 
     with open(path3 + '/status', 'w') as file:
         file.write(metric + ' - dynamic time warping')
-    dtw_result = run_dtw(ori_val, gen_val)
-    print(dtw_result)
+    dtw_result = run_dtw(ori_val, gen_val, metric)
+    print('dynamic time warping:', dtw_result)
 
     with open(path3 + '/status', 'w') as file:
         file.write(metric + ' - correlations')
     corr_result = run_correlations(ori.copy(), gen, metric)
-    print(corr_result)
 
     df_all = corr_result.copy()
     df_all = df_all.drop(['mean'], axis=0)
@@ -159,14 +161,23 @@ def run_eval(resampled, generated, path3, metric, num_metrics, file, filename):
     df_all.loc['euclidean'] = euclidean_result
     df_all.loc['dtw'] = dtw_result
     df_all = df_all.T
-    print(df_all)
 
     plot = df_all.plot(figsize=(30,9),  lw=6, xlabel='run index', ylabel='value')
     plot.set_ylim(0,1.1)
     fig = plot.get_figure()
-
+    plt.title('Correlations for each Run for ' + metric)
     fig.savefig('comp_eval_tech.pdf')
     fig.show()
+
+    df_all_corr = df_all.corr(method='pearson')
+
+    fig, ax = plt.subplots(figsize=(14,10)) 
+
+    sn.heatmap(df_all_corr, annot=True, ax=ax)
+    plt.title('Heatmap for ' +  metric)
+    plt.savefig('comp_eval_tech_heatmap.pdf')
+    plt.show()
+    print('\n\n\n\n')
         
 
 

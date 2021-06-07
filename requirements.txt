@@ -10,3 +10,4 @@ scikit-learn == 0.23.2
 tqdm == 4.51.0
 seaborn == 0.11.0
 gunicorn == 20.0.4
+dtw == 1.4.0

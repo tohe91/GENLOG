@@ -113,6 +113,7 @@ def train_models2(path, path2, path3, file, filename):
         custom_lines = [Line2D([0], [0], color='red', lw=4), Line2D([0], [0], color='blue', lw=4)]
         plt.rcParams.update({'font.size': 24})
         fig, ax = plt.subplots(figsize=(30,9))
+        plt.title('Generated data for ' +  '_'.join(file_name.split('_')[1:]))
         ax.legend(custom_lines, ['real data', 'generated data'])
         ax.set(xlabel='time (100ms)', ylabel=y_label)
         num_of_models = len(csv_files_all)
