@@ -27,7 +27,7 @@ def run_euclidean(ori_val, gen_val):
 def run_dtw(ori_val, gen_val, metric):
     fontsize = 22
     matplotlib.rcParams.update({'font.size': fontsize})
-    fig, axs = plt.subplots(2, 3, figsize=(18,12))
+    fig, axs = plt.subplots(2, 3, figsize=(27,18))
     fig.suptitle('Dynamic Time Warping for ' + metric)
     min_paths = []
    
@@ -162,7 +162,7 @@ def run_eval(resampled, generated, path3, metric, num_metrics, file, filename):
     df_all.loc['dtw'] = dtw_result
     df_all = df_all.T
 
-    plot = df_all.plot(figsize=(30,9),  lw=6, xlabel='run index', ylabel='value')
+    plot = df_all.plot(figsize=(26,8),  lw=6, xlabel='run index', ylabel='value')
     plot.set_ylim(0,1.1)
     fig = plot.get_figure()
     plt.title('Correlations for each Run for ' + metric)
@@ -171,7 +171,7 @@ def run_eval(resampled, generated, path3, metric, num_metrics, file, filename):
 
     df_all_corr = df_all.corr(method='pearson')
 
-    fig, ax = plt.subplots(figsize=(14,10)) 
+    fig, ax = plt.subplots(figsize=(26,17)) 
 
     sn.heatmap(df_all_corr, annot=True, ax=ax)
     plt.title('Heatmap for ' +  metric)

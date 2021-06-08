@@ -31,7 +31,7 @@ def create_notebook(file, filename):
                 nbf.v4.new_code_cell(code3),
                 nbf.v4.new_code_cell(code4),   
                 nbf.v4.new_code_cell(code5),
-            #    nbf.v4.new_code_cell(code6),
+                nbf.v4.new_code_cell(code6),
                 ]
                 
     #nbf.write(nb, '../lstm.ipynb')
