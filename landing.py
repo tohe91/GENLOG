@@ -89,6 +89,10 @@ def set_status(name):
         if os.path.exists('uploads/' + name + '/models/lstm/status'):
             model_status = open('uploads/' + name + '/models/lstm/status').read()
         status = 'training models - ' + model_status
+    if os.path.exists('uploads/' + name + '/eval'):
+        status = 'evaluating'
+        if os.path.exists('uploads/' + name + '/eval/status'):
+            status = status + ' - ' + open('uploads/' + name + '/eval/status').read()
     if os.path.exists('uploads/' + name + '/generated_logs'):
         total = len(os.listdir('uploads/resampled/Axis_X_aaLoad'))
         current = len(os.listdir('uploads/' + name + '/generated_logs'))
@@ -99,10 +103,7 @@ def set_status(name):
                 if not os.path.exists('uploads/' + name):
                     if not name in last_runs:
                         status = ''
-    if os.path.exists('uploads/' + name + '/eval'):
-        status = 'evaluating'
-        if os.path.exists('uploads/' + name + '/eval/status'):
-            status = status + ' - ' + open('uploads/' + name + '/eval/status').read()
+
 
     return status
     
