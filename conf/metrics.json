@@ -1,4 +1,5 @@
 [	
 	"Axis/X/aaLoad",
-	"Axis/Y/aaLoad"
+	"Axis/Y/aaLoad",
+        "Spindle/actSpeed"
 ]
